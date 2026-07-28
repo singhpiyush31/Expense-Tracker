@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
+const url = process.env.URL;
+
 const connectDB = async () => {
-    await mongoose.connect("mongodb://localhost:27017/Expense-Tracker");
+    await mongoose.connect(url);
 };
 
 module.exports = connectDB;
