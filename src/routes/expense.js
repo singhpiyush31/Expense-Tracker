@@ -1,13 +1,15 @@
 const express = require('express');
 
 const userAuth = require('../middlewares/authentication');
-const { create, expenseList } = require('../controllers/expense');
+const { create, expenseList, listById } = require('../controllers/expense');
 
 
 const expenseRouter = express.Router();
 
 expenseRouter.post("/create" , userAuth, create);
-expenseRouter.get("/", userAuth, expenseList)
+expenseRouter.get("/", userAuth, expenseList);
+expenseRouter.get("/:Id", userAuth, listById);
+
 
 
 
