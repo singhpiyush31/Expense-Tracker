@@ -43,6 +43,16 @@ exports.listById = async (req,res) => {
         const listId = await Expense.findById(req.params.Id);
         res.status(200).json({ message: "Your Expense", listId });
     } catch (err) {
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+};
+
+exports.updateList = async (req,res) => {
+    try {
+        const listEdit = await Expense.findByIdAndUpdate(req.params.Id, req.body);
+        await listEdit.save();
+        res.status(200).json({ message: "Updated Expense List", listEdit });
+    } catch (err) {
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
 };
