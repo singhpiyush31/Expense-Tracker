@@ -11,8 +11,7 @@ const userAuth = async (req,res,next) => {
             return res.status(401).json({ message: "Please login again" });
         }
 
-        const obj = await jwt.verify(jwtToken, process.env.JWT_SECRET);
-        console.log(process.env.JWT_SECRET);        
+        const obj = await jwt.verify(jwtToken, process.env.JWT_SECRET);        
         
         const { id } = obj;
 
