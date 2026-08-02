@@ -3,12 +3,14 @@ require('dotenv').config();
 
 const connectDB = require('./config/database');
 const authRouter = require('./routes/auth');
+const expenseRouter = require('./routes/expense');
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/auth", authRouter);
+app.use("/expense", expenseRouter);
 
 const port = process.env.PORT || 3000;
 
