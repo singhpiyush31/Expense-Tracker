@@ -40,7 +40,15 @@ exports.expenseList = async (req,res) => {
 
 exports.listById = async (req,res) => {
     try {
-        const listId = await Expense.findById(req.params.Id);
+        const expenseId = req.params.Id;
+        const loggedInUserId = req.user._id;
+
+        const listId = await Expense.findOne({ user: loggedInUserId, _id: expenseId });
+
+        if(!listId) {
+            return res.status(404).json({ message: "Expense not found!" });
+        }
+
         res.status(200).json({ message: "Your Expense", listId });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error", error: err.message });
@@ -49,9 +57,21 @@ exports.listById = async (req,res) => {
 
 exports.updateList = async (req,res) => {
     try {
-        const listEdit = await Expense.findByIdAndUpdate(req.params.Id, req.body);
-        await listEdit.save();
-        res.status(200).json({ message: "Updated Expense List", listEdit });
+        const { title, category, amount, paymentMethod, date, note } = req.body;
+        const userId = req.user._id;
+        const expenseId = req.params.Id;
+
+        const listEdit = await Expense.findOneAndUpdate(
+            { user: userId, _id: expenseId },
+            { title, category, amount, paymentMethod, date, note },
+            { new: true }
+        );
+
+        if(!listEdit) {
+            return res.status(404).json({ message: "Expense not found!" });
+        }
+
+        res.status(200).json({ message: "Expense updated successfully!", listEdit });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
@@ -59,7 +79,14 @@ exports.updateList = async (req,res) => {
 
 exports.deleteList = async (req,res) => {
     try {
-        const listDelete = await Expense.findByIdAndDelete(req.params.Id);
+        const userId = req.user._id;
+        const expenseId = req.params.Id;
+
+        const listDelete = await Expense.findOneAndDelete({ user: userId, _id: expenseId });
+
+        if (!listDelete) {
+            return res.status(404).json({ message: "Expense not found!" });
+        }
         res.status(200).json({ message: "Your Expense Deleted successfully!" });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error" });

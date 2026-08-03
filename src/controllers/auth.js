@@ -42,7 +42,7 @@ exports.login = async (req,res) => {
         const passwordValid = await bcrypt.compare(password, user.password);
 
         if(!passwordValid) {
-            res.status(404).json({ message: "Invalid Credential" });
+            return res.status(404).json({ message: "Invalid Credential" });
         }
         const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
         res.cookie("jwtToken", token, { maxAge: 7*24*60*60*1000 });
