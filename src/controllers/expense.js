@@ -64,7 +64,7 @@ exports.updateList = async (req,res) => {
         const listEdit = await Expense.findOneAndUpdate(
             { user: userId, _id: expenseId },
             { title, category, amount, paymentMethod, date, note },
-            { new: true }
+            { new: true, runValidators: true }
         );
 
         if(!listEdit) {

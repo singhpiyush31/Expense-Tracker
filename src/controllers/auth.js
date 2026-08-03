@@ -6,22 +6,31 @@ const User = require('../models/user');
 exports.register = async (req,res) => {
     try {
         const { name, email, password } = req.body;
+
+        if (!email || !password || !name) {
+            return res.status(400).json({ message: "Enter name, email and password"});
+        }
+
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     
         if (!emailRegex.test(email)) {
             return res.status(400).json({ message: "Invalid format. Please check your email." })
         }
+        const isExist = await User.findOne({ email: email });
 
-        if (!email || !password || !name) {
-            return res.status(400).json({ message: "Enter name, email and password"});
+        if(isExist) {
+            return res.status(400).json({ message: "Email already exist!" });
         }
+
         const passwordHash = await bcrypt.hash(password, 10);
 
         const user = new User({
             name, email, password: passwordHash,
         });
         await user.save();
-        res.status(200).json({ message: "User Added Successfully!", user: user });
+        res.status(200).json({ message: "User Added Successfully!",
+            user: { _id: user._id, email: user.email, name: user.name }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message, message: "Internal Server Error" });
     }
