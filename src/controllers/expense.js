@@ -31,8 +31,16 @@ exports.create = async (req,res) => {
 
 exports.expenseList = async (req,res) => {
     try {
-        const list = await Expense.find({ user: req.user._id });
-        res.status(200).json({ message: "Your Expenses: ", list });
+
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+
+        const skip = (page - 1) * limit;
+        const totalExpenses = await Expense.countDocuments({ user: req.user._id });
+        const totalPages = Math.ceil(totalExpenses / limit);
+
+        const list = await Expense.find({ user: req.user._id }).skip(skip).limit(limit);
+        res.status(200).json({ message: "Your Expenses: ", list, pages: totalPages, limit });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
