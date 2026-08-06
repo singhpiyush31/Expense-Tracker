@@ -67,10 +67,15 @@ exports.expenseList = async (req,res) => {
             }
         }
 
+        let sort = -1;
+        if(req.query.sort == "oldest") {
+            sort = 1;
+        }
+
         const skip = (page - 1) * limit;
         const totalExpenses = await Expense.countDocuments(filter);
         const totalPages = Math.ceil(totalExpenses / limit);
-        const list = await Expense.find(filter).sort({ date: -1 }).skip(skip).limit(limit);
+        const list = await Expense.find(filter).sort({ date: sort }).skip(skip).limit(limit);
         res.status(200).json({ message: "Your Expenses: ", list, pages: totalPages, limit, page });
     } catch (err) {
         res.status(500).json({ message: "Internal Server Error", error: err.message });
