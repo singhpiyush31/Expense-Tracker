@@ -72,6 +72,10 @@ exports.expenseList = async (req,res) => {
             sort = 1;
         }
 
+        if(req.query.search) {
+            filter.title = { $regex: req.query.search, $options: 'i'};
+        }
+        
         const skip = (page - 1) * limit;
         const totalExpenses = await Expense.countDocuments(filter);
         const totalPages = Math.ceil(totalExpenses / limit);
