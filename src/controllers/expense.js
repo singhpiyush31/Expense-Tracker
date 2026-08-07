@@ -140,3 +140,43 @@ exports.deleteList = async (req,res) => {
         res.status(500).json({ message: "Internal Server Error" });
     } 
 };
+
+exports.total = async (req,res) => {
+    try {
+        const filter = { user: req.user._id };
+
+        if(req.query.category) {
+            filter.category = req.query.category;
+        }
+
+        if(req.query.paymentMethod) {
+            filter.paymentMethod = req.query.paymentMethod;
+        }
+
+        if(req.query.from || req.query.to) {
+            filter.date = {};
+            if(req.query.from){
+                filter.date.$gte = new Date(req.query.from);
+            }
+            if(req.query.to){
+                filter.date.$lte = new Date(req.query.to);
+            }
+        }
+
+        const list = await Expense.find(filter);
+
+        let sum = 0;
+        for (let i = 0; i < list.length; i++) {
+            sum += list[i].amount;
+        }
+        
+        res.status(200).json({ message: "Total amount of expenses: ", amount: sum, count: list.length });
+    } catch (err) {
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+
+
+
+
+
+}
